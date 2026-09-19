@@ -14,6 +14,10 @@ const mediaSchema = new mongoose.Schema(
     alt: { type: String, default: "" },
     caption: { type: String, default: "" },
     folder: { type: mongoose.Schema.Types.ObjectId, ref: "MediaFolder", default: null, index: true },
+    // Where an imported picture came from. The identity of a file we did not
+    // create ourselves, so a re-import reuses it instead of fetching again and
+    // a picture used on two pages is stored once. Sparse: uploads have none.
+    sourceUrl: { type: String, default: null, index: { sparse: true } },
     uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     deletedAt: { type: Date, default: null, index: true },
   },

@@ -86,6 +86,7 @@ router.get("/posts", asyncHandler(async (req, res) => {
 router.get("/posts/:slug", asyncHandler(async (req, res) => {
   const post = await Post.findOne({ slug: req.params.slug, ...live() })
     .populate("featuredImage", "url alt width height")
+    .populate("sections.image", "url alt width height")
     .populate("contentType", "name slug")
     .populate("author", "name")
     .populate("tags", "name slug")
