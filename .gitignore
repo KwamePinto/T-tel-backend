@@ -1,0 +1,17 @@
+# dependencies
+node_modules
+
+# secrets: MONGO_URI, JWT_SECRET and the seed admin password live here
+.env
+.env.*
+!.env.example
+
+# Uploaded media and the Knowledge Hub PDFs (~2.5GB). These belong on the
+# host's persistent disk or in object storage, never in the repository.
+uploads/*
+!uploads/.gitkeep
+
+# logs
+logs
+*.log
+npm-debug.log*
