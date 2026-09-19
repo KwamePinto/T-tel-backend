@@ -1,0 +1,37 @@
+import mongoose from "mongoose";
+
+// Fixes a flaw in the live system, where each of ~85 team members was stored
+// as a Page. People are their own model: grouped, ordered and searchable.
+const personSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, trim: true },
+    slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    position: { type: String, default: "", trim: true },
+    group: { type: mongoose.Schema.Types.ObjectId, ref: "PersonGroup", required: true, index: true },
+    photo: { type: mongoose.Schema.Types.ObjectId, ref: "Media" },
+    bio: { type: String, default: "" },
+    email: { type: String, default: "" },
+    linkedin: { type: String, default: "" },
+    tag: { type: String, default: "" }, // e.g. "Leadership" / "Official" ribbon
+    status: { type: String, enum: ["draft", "published"], default: "published", index: true },
+    sortOrder: { type: Number, default: 0 },
+    deletedAt: { type: Date, default: null, index: true },
+  },
+  { timestamps: true },
+);
+
+personSchema.index({ name: "text", position: "text", bio: "text" });
+
+export const Person = mongoose.model("Person", personSchema);
+
+const personGroupSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, trim: true },
+    slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    description: { type: String, default: "" },
+    sortOrder: { type: Number, default: 0 },
+  },
+  { timestamps: true },
+);
+
+export const PersonGroup = mongoose.model("PersonGroup", personGroupSchema);
