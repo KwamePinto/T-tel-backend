@@ -93,18 +93,23 @@ const s3 = {
    * A short-lived signed URL carrying the original filename, so the browser
    * saves "Chemistry Around Us.pdf" rather than the hashed storage key — and
    * the file travels from R2 to the visitor without passing through the API.
+   *
+   * `inline` asks the browser to render the PDF in its own viewer instead of
+   * saving it. Those URLs live much longer because the viewer keeps making
+   * range requests as the reader scrolls: a signature that expired mid-document
+   * would leave the remaining pages blank with no visible reason why.
    */
-  async downloadUrl(key, filename) {
+  async downloadUrl(key, filename, { inline = false } = {}) {
     const { GetObjectCommand } = await import("@aws-sdk/client-s3");
     const { getSignedUrl } = await import("@aws-sdk/s3-request-presigner");
     const command = new GetObjectCommand({
       Bucket: env.s3.bucket,
       Key: key,
       ResponseContentDisposition: filename
-        ? `attachment; filename="${filename.replace(/"/g, "")}"`
+        ? `${inline ? "inline" : "attachment"}; filename="${filename.replace(/"/g, "")}"`
         : undefined,
     });
-    return getSignedUrl(await s3Client(), command, { expiresIn: 300 });
+    return getSignedUrl(await s3Client(), command, { expiresIn: inline ? 3600 : 300 });
   },
 };
 
