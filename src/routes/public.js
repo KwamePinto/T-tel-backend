@@ -213,18 +213,36 @@ router.post("/documents/:id/download", asyncHandler(async (req, res) => {
   res.json({ url: `/api/documents/${doc._id}/file`, filename: doc.file?.originalName });
 }));
 
-/** Serves the PDF under its original filename, from wherever it is stored. */
+/**
+ * Serves the PDF under its original filename, from wherever it is stored.
+ * `?inline=1` asks the browser to display it rather than save it, which is
+ * what the on-page reader loads.
+ */
 router.get("/documents/:id/file", asyncHandler(async (req, res) => {
   const doc = await Document.findOne({ _id: req.params.id, deletedAt: null, status: "published" })
     .populate("file", "key originalName mime").lean();
   if (!doc?.file) throw ApiError.notFound("Document not found");
 
   const filename = doc.file.originalName || path.basename(doc.file.key);
+  const inline = req.query.inline === "1" || req.query.inline === "true";
+
+  if (inline) {
+    // Helmet sends X-Frame-Options: SAMEORIGIN for everything, which stops the
+    // site framing a document served from this origin — the reader just shows
+    // the browser's broken-file icon. Swap it for frame-ancestors naming the
+    // front end, which is the modern equivalent and can allow one other origin.
+    res.removeHeader("X-Frame-Options");
+    const ancestors = env.clientOrigin
+      .split(",")
+      .map((o) => o.trim().replace(/\/+$/, ""))
+      .filter(Boolean);
+    res.setHeader("Content-Security-Policy", `frame-ancestors 'self' ${ancestors.join(" ")}`.trim());
+  }
 
   // On remote storage, hand back a short-lived signed URL: the download goes
   // straight from the bucket to the visitor, carrying the right filename,
   // without a few hundred megabytes passing through this process.
-  const signed = await storage().downloadUrl(doc.file.key, filename);
+  const signed = await storage().downloadUrl(doc.file.key, filename, { inline });
   if (signed) return res.redirect(302, signed);
 
   const abs = path.join(env.uploadDir, doc.file.key);
@@ -232,6 +250,13 @@ router.get("/documents/:id/file", asyncHandler(async (req, res) => {
 
   res.setHeader("Cache-Control", "public, max-age=2592000");
   res.type(doc.file.mime || "application/pdf");
+
+  if (inline) {
+    // sendFile handles range requests, which is what lets a browser's PDF
+    // viewer paint page one of a 150MB manual without fetching the rest
+    res.setHeader("Content-Disposition", `inline; filename="${filename.replace(/"/g, "")}"`);
+    return res.sendFile(abs);
+  }
   // sendFile sets Content-Disposition from this name and handles range requests
   res.download(abs, filename);
 }));
