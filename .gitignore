@@ -6,10 +6,23 @@ node_modules
 .env.*
 !.env.example
 
-# Uploaded media and the Knowledge Hub PDFs (~2.5GB). These belong on the
-# host's persistent disk or in object storage, never in the repository.
+# ---------------------------------------------------------------------------
+# Uploads
+#
+# The Knowledge Hub PDFs are 2.4GB and one of them is over GitHub's 100MB
+# per-file limit, so they cannot live here. They belong on a persistent disk
+# or in object storage — see DEPLOYMENT.md.
+#
+# Their cover thumbnails (9.8MB) and the imported site images (18MB) ARE
+# committed on purpose: without them a fresh deploy renders the Knowledge Hub
+# as several hundred broken images, and every post loses its picture. 28MB is
+# a fair price for a site that looks right the moment it boots.
+# ---------------------------------------------------------------------------
+uploads/documents/
 uploads/*
 !uploads/.gitkeep
+!uploads/thumbnails/
+!uploads/imported/
 
 # logs
 logs
