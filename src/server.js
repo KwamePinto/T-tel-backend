@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 
 import { env } from "./config/env.js";
+import { storage } from "./services/storage.js";
 import { connectDb } from "./config/db.js";
 import adminRoutes from "./routes/admin.js";
 import publicRoutes from "./routes/public.js";
@@ -65,7 +66,28 @@ app.use(
 );
 
 // uploaded files
-app.use("/uploads", express.static(env.uploadDir, { maxAge: "30d", fallthrough: true }));
+// Uploaded files. On local storage they come off disk; on R2 the request is
+// redirected to the bucket's public URL so the bytes never pass through here.
+if (env.storageDriver === "local") {
+  app.use("/uploads", express.static(env.uploadDir, { maxAge: "30d", fallthrough: true }));
+} else if (env.s3.publicBaseUrl) {
+  app.get("/uploads/*", (req, res) => {
+    const key = req.params[0];
+    res.set("Cache-Control", "public, max-age=2592000");
+    res.redirect(302, `${env.s3.publicBaseUrl.replace(/\/+$/, "")}/${key}`);
+  });
+} else {
+  // no public URL configured: stream through the API rather than 404
+  app.get("/uploads/*", async (req, res, next) => {
+    try {
+      const url = await storage().downloadUrl(req.params[0]);
+      if (!url) return next();
+      res.redirect(302, url);
+    } catch (err) {
+      next(err);
+    }
+  });
+}
 
 app.get("/health", (req, res) => res.json({ ok: true, env: env.nodeEnv, time: new Date() }));
 

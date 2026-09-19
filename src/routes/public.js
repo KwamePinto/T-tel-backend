@@ -2,6 +2,7 @@ import { Router } from "express";
 import fs from "node:fs";
 import path from "node:path";
 import { env } from "../config/env.js";
+import { storage } from "../services/storage.js";
 import { escapeRegex } from "../utils/escapeRegex.js";
 import rateLimit from "express-rate-limit";
 import {
@@ -212,11 +213,19 @@ router.post("/documents/:id/download", asyncHandler(async (req, res) => {
   res.json({ url: `/api/documents/${doc._id}/file`, filename: doc.file?.originalName });
 }));
 
-/** Streams the PDF under its original filename. */
+/** Serves the PDF under its original filename, from wherever it is stored. */
 router.get("/documents/:id/file", asyncHandler(async (req, res) => {
   const doc = await Document.findOne({ _id: req.params.id, deletedAt: null, status: "published" })
     .populate("file", "key originalName mime").lean();
   if (!doc?.file) throw ApiError.notFound("Document not found");
+
+  const filename = doc.file.originalName || path.basename(doc.file.key);
+
+  // On remote storage, hand back a short-lived signed URL: the download goes
+  // straight from the bucket to the visitor, carrying the right filename,
+  // without a few hundred megabytes passing through this process.
+  const signed = await storage().downloadUrl(doc.file.key, filename);
+  if (signed) return res.redirect(302, signed);
 
   const abs = path.join(env.uploadDir, doc.file.key);
   if (!fs.existsSync(abs)) throw ApiError.notFound("File is missing from storage");
@@ -224,7 +233,7 @@ router.get("/documents/:id/file", asyncHandler(async (req, res) => {
   res.setHeader("Cache-Control", "public, max-age=2592000");
   res.type(doc.file.mime || "application/pdf");
   // sendFile sets Content-Disposition from this name and handles range requests
-  res.download(abs, doc.file.originalName || path.basename(abs));
+  res.download(abs, filename);
 }));
 
 /* ---------------- events ---------------- */
