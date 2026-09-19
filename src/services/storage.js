@@ -8,7 +8,11 @@ const local = {
   async save(file) {
     // multer.diskStorage has already written the file; just describe it
     const key = path.relative(env.uploadDir, file.path).split(path.sep).join("/");
-    return { key, url: `${env.publicUrl}/uploads/${key}` };
+    // Relative, never absolute. Baking the host in at upload time means every
+    // record breaks the moment the API moves — which is exactly what happened
+    // to the images imported on a laptop and then served from Render. The
+    // front end resolves these against VITE_API_URL at render time.
+    return { key, url: `/uploads/${key}` };
   },
   async remove(key) {
     const full = path.join(env.uploadDir, key);
