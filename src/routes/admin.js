@@ -70,7 +70,7 @@ async function resolveTagNames(payload) {
 resource("/posts", Post, {
   searchable: ["title", "excerpt"],
   slugFrom: "title",
-  populate: ["author", "contentType", "featuredImage", "tags"],
+  populate: ["author", "contentType", "featuredImage", "tags", "sections.image"],
   defaultSort: "-publishedAt -createdAt",
   allowedFilters: ["status", "contentType", "tag"],
   filterMap: { tag: "tags" },

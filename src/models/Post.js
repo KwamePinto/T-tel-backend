@@ -19,6 +19,30 @@ const postSchema = new mongoose.Schema(
     accent: { type: String, default: "" },
     number: { type: String, default: "" },
 
+    /**
+     * Laid-out page content, for the Focus Area and Programme pages whose
+     * copy alternates with imagery rather than running as one column.
+     *
+     *   prose   a block of rich text
+     *   split   a half-and-half row, image one side and text the other
+     *   image   a full-width figure
+     *   facts   a narrow panel of details beside the narrative
+     *
+     * `body` stays the fallback: a post with no sections renders that, so
+     * every existing post and the whole Blog are unaffected.
+     */
+    sections: [
+      {
+        _id: false,
+        type: { type: String, enum: ["prose", "split", "image", "facts"], default: "prose" },
+        html: { type: String, default: "" },
+        aside: { type: String, default: "" },
+        image: { type: mongoose.Schema.Types.ObjectId, ref: "Media" },
+        // image on the right rather than the left, so rows can alternate
+        flip: { type: Boolean, default: false },
+      },
+    ],
+
     meta: {
       title: String,
       description: String,
