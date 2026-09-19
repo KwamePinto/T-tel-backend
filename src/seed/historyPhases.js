@@ -36,8 +36,10 @@ const PHASES = [
   },
   {
     step: 2,
+    // The reference site repeats Phase 1's photograph here; showing the same
+    // picture twice in one column says nothing the second time.
     title: "Phase 2",
-    image: PHASE_IMAGE,
+    image: null,
     paras: [
       "The idea to set up T-TEL as an independent organisation was first conceived on 30 July 2019 during a meeting held on the margins of the Association for the Development of Education in Africa High-Level Policy Dialogue Forum on Secondary Education in Johannesburg, South Africa. The meeting brought together representatives from the Mastercard Foundation and a high-level Ghanaian delegation led by the then Minister for Education. Accompanying the Minister were the Director-General of the Ghana Education Service, the Administrator of GETFund and a Key Advisor from the T-TEL Project1 who had played a central role in facilitating the delegation's participation.",
     ],
