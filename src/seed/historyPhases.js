@@ -28,7 +28,7 @@ const PHASE_IMAGE = "/images/history/2014-programme-launch.jpg";
 const PHASES = [
   {
     step: 1,
-    title: "Phase 1",
+    title: "The programme begins",
     image: PHASE_IMAGE,
     paras: [
       "The establishment of Transforming Teaching, Education and Learning (T-TEL) as a not-for-profit organisation was an important moment in Ghana's education reform journey. What began as an externally funded and managed development programme evolved into a fully Ghanaian-owned organisation committed to supporting national efforts to improve education at all levels.",
@@ -38,7 +38,7 @@ const PHASES = [
     step: 2,
     // The reference site repeats Phase 1's photograph here; showing the same
     // picture twice in one column says nothing the second time.
-    title: "Phase 2",
+    title: "The idea is born",
     image: PHASE_IMAGE,
     paras: [
       "The idea to set up T-TEL as an independent organisation was first conceived on 30 July 2019 during a meeting held on the margins of the Association for the Development of Education in Africa High-Level Policy Dialogue Forum on Secondary Education in Johannesburg, South Africa. The meeting brought together representatives from the Mastercard Foundation and a high-level Ghanaian delegation led by the then Minister for Education. Accompanying the Minister were the Director-General of the Ghana Education Service, the Administrator of GETFund and a Key Advisor from the T-TEL Project1 who had played a central role in facilitating the delegation's participation.",
@@ -46,7 +46,7 @@ const PHASES = [
   },
   {
     step: 3,
-    title: "Phase 3",
+    title: "Momentum protected",
     image: PHASE_IMAGE,
     paras: [
       "Recognising the imminent closure of the T-TEL Project in December 2020, the Minister and his team saw the urgent need to sustain the momentum and technical support that the Project had provided. They agreed that the legacy of the T-TEL Project should continue through the creation of a new, independent and Ghanaian-led organisation.",
@@ -54,7 +54,7 @@ const PHASES = [
   },
   {
     step: 4,
-    title: "Phase 4",
+    title: "Foundations laid",
     image: PHASE_IMAGE,
     paras: [
       "Upon returning to Ghana, a small team of committed individuals was mobilized who became known as the promoters. These individuals gave their time, expertise and energy to ensure that proper foundations were laid for the new organisation. Their efforts led to the identification of a distinguished legal expert, the recruitment of founding subscribers and board members and ultimately, the registration of Transforming Teaching, Education and Learning (T-TEL) as a Ghanaian non-governmental organisation on 7th July 2020.",
@@ -62,7 +62,7 @@ const PHASES = [
   },
   {
     step: 5,
-    title: "Phase 5",
+    title: "Built on partnership",
     image: PHASE_IMAGE,
     paras: [
       "From its inception T-TEL was built on the principle of partnership with government and education institutions. It was created to serve as a trusted technical partner, supporting national leadership to own reforms and drive innovations to move Ghana's education system to greater heights.",
@@ -89,8 +89,18 @@ if (!section) throw new Error("Our History has no milestones section to rewrite.
 const data = {
   layout: "phases",
   heroSource: HERO,
-  // the reference page opens straight onto the timeline
-  intro: [],
+  story: {
+    eyebrow: "Our Origins",
+    heading: "From an externally funded programme to a Ghanaian-owned institution",
+    lead: "The idea is conceived on the margins of an ADEA policy forum in Johannesburg.",
+    stats: [
+      { value: "2019", label: "The idea is conceived on the margins of an ADEA policy forum in Johannesburg." },
+      { value: "7 July 2020", label: "Registered as a Ghanaian non-governmental organisation." },
+      { value: "2020", label: "The T-TEL Project's legacy continues under national leadership." },
+    ],
+    quote: "Created to serve as a trusted technical partner — supporting national leadership to own reforms and drive innovations to move Ghana's education system to greater heights.",
+    quoteAttrib: "The founding purpose of T-TEL",
+  },
   milestones: PHASES,
   links: LINKS,
 };
