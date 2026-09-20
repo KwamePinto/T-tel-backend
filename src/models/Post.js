@@ -43,6 +43,23 @@ const postSchema = new mongoose.Schema(
       },
     ],
 
+    /**
+     * The panel that stays pinned beside the narrative on a focus area —
+     * delivery partners, the figures that matter, whatever this particular
+     * page needs a reader to keep in view while they scroll.
+     *
+     * Per post rather than a site-wide block, because the whole point of it
+     * is to say something about the page it sits on. A post that leaves it
+     * empty simply renders without the panel.
+     */
+    keyInfo: {
+      label: { type: String, default: "" },
+      title: { type: String, default: "" },
+      html: { type: String, default: "" },
+      linkLabel: { type: String, default: "" },
+      linkUrl: { type: String, default: "" },
+    },
+
     meta: {
       title: String,
       description: String,
