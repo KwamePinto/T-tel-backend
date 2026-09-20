@@ -102,7 +102,7 @@ resource("/pages", Page, {
   slugFrom: "title",
   populate: ["heroImage"],
   defaultSort: "sortOrder -createdAt",
-  allowedFilters: ["status", "kind"],
+  allowedFilters: ["status", "kind", "section"],
   transform: guardPageKind,
 });
 
