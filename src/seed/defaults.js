@@ -17,15 +17,19 @@ export const PERSON_GROUPS = [
 ];
 
 /**
- * Knowledge Hub structure, matching the live site's menu: Teacher Education
- * is a parent holding four sub-collections, then three top-level siblings.
+ * Knowledge Hub structure, matching the live site's menu order: Basic and
+ * Secondary Education, TVET, then Teacher Education (holding four
+ * sub-collections) and Reports & Publications.
  * `policies` is kept for the Our Policies page, which is fed separately.
  */
 export const DOCUMENT_COLLECTION_TREE = [
+  { name: "Basic Education", slug: "basic-education", sortOrder: 1 },
+  { name: "Secondary Education", slug: "secondary-education", sortOrder: 2 },
+  { name: "TVET", slug: "tvet", sortOrder: 3 },
   {
     name: "Teacher Education",
     slug: "teacher-education",
-    sortOrder: 1,
+    sortOrder: 4,
     children: [
       { name: "B.Ed. Resources", slug: "bed-resources", sortOrder: 1 },
       { name: "Impact, Learning & Good Practice", slug: "impact-learning-and-good-practice", sortOrder: 2 },
@@ -33,9 +37,6 @@ export const DOCUMENT_COLLECTION_TREE = [
       { name: "Teacher Education Policy & Institutional Development", slug: "teacher-education-policy-and-institutional-development", sortOrder: 4 },
     ],
   },
-  { name: "Basic Education", slug: "basic-education", sortOrder: 2 },
-  { name: "Secondary Education", slug: "secondary-education", sortOrder: 3 },
-  { name: "TVET", slug: "tvet", sortOrder: 4 },
   { name: "T-TEL Reports & Publications", slug: "reports-and-publications", sortOrder: 5 },
   { name: "Policies", slug: "policies", sortOrder: 6 },
 ];
