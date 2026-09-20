@@ -139,7 +139,7 @@ router.get("/partners", asyncHandler(async (req, res) => {
 
 /* ---------------- knowledge hub ---------------- */
 router.get("/documents", asyncHandler(async (req, res) => {
-  const { collection, search, year, page = 1, limit = 24, sort = "date", order = "desc" } = req.query;
+  const { collection, tag, search, year, page = 1, limit = 24, sort = "date", order = "desc" } = req.query;
   const filter = { deletedAt: null, status: "published" };
 
   // mirrors the controls the old Knowledge Hub offered
@@ -158,6 +158,9 @@ router.get("/documents", asyncHandler(async (req, res) => {
       : c._id;
   }
   if (year) filter.year = Number(year);
+  // an exact tag, which is how a collection splits itself into the groups its
+  // page offers as filters — unlike search, it cannot also hit a title
+  if (tag) filter.tags = tag;
   if (search) {
     const rx = new RegExp(escapeRegex(search), "i");
     filter.$or = [{ title: rx }, { description: rx }, { tags: rx }];
