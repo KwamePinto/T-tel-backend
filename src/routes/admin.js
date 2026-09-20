@@ -77,11 +77,33 @@ resource("/posts", Post, {
   transform: resolveTagNames,
 });
 
+/**
+ * `kind` decides which editor the admin renders, and a special page's slug is
+ * what binds it to a coded route and a blueprint — so neither is something a
+ * request is allowed to set. Anything created through the API is a custom
+ * page, and renaming a special page's slug would silently orphan it from the
+ * component that renders it, so that field is dropped too. Promoting a page to
+ * special is a deliberate act done alongside shipping its component, which is
+ * what the classifyPages script is for.
+ */
+async function guardPageKind(payload, req) {
+  if (req.method === "POST") {
+    payload.kind = "custom";
+    return payload;
+  }
+  delete payload.kind;
+  const existing = await Page.findById(req.params.id).select("kind").lean();
+  if (existing?.kind === "special") delete payload.slug;
+  return payload;
+}
+
 resource("/pages", Page, {
   searchable: ["title", "slug"],
   slugFrom: "title",
   populate: ["heroImage"],
   defaultSort: "sortOrder -createdAt",
+  allowedFilters: ["status", "kind"],
+  transform: guardPageKind,
 });
 
 resource("/content-types", ContentType, {
