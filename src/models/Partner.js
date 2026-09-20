@@ -1,14 +1,13 @@
 import mongoose from "mongoose";
 
-// The live site hardcoded its funder logos into the theme. Here they are
-// editable, grouped and orderable.
+// Groups are database records; these values remain seed defaults for migrations.
 export const PARTNER_GROUPS = ["funder", "government", "university", "implementing", "research"];
 
 const partnerSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    group: { type: String, enum: PARTNER_GROUPS, default: "funder", index: true },
+    group: { type: String, required: true, default: "funder", index: true },
     logo: { type: mongoose.Schema.Types.ObjectId, ref: "Media" },
     description: { type: String, default: "" },
     url: { type: String, default: "" },

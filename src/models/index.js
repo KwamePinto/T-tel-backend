@@ -6,6 +6,7 @@ export { Post, STATUSES } from "./Post.js";
 export { Page, TEMPLATES } from "./Page.js";
 export { Person, PersonGroup } from "./Person.js";
 export { Partner, PARTNER_GROUPS } from "./Partner.js";
+export { PartnerGroup } from "./PartnerGroup.js";
 export { Media, MediaFolder } from "./Media.js";
 export { Menu, MenuItem, MENU_LOCATIONS } from "./Menu.js";
 export { Form, FormSubmission, FIELD_TYPES } from "./Form.js";

@@ -1,4 +1,4 @@
-import { Post, Page, Person, Partner, Form, Event, Slider, Document } from "../models/index.js";
+import { Post, Page, Person, Partner, PartnerGroup, Form, Event, Slider, Document } from "../models/index.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { env } from "../config/env.js";
@@ -9,6 +9,7 @@ const TRASHABLE = {
   page: { Model: Page, label: "Page", titleField: "title" },
   person: { Model: Person, label: "Person", titleField: "name" },
   partner: { Model: Partner, label: "Partner", titleField: "name" },
+  "partner-group": { Model: PartnerGroup, label: "Partner group", titleField: "name" },
   form: { Model: Form, label: "Form", titleField: "title" },
   event: { Model: Event, label: "Event", titleField: "title" },
   slider: { Model: Slider, label: "Slider", titleField: "name" },

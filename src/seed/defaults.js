@@ -112,6 +112,17 @@ export const THEME_SETTINGS = {
   show_blog: { value: true, type: "boolean" },
   cta_label: { value: "Contact Us", type: "text" },
   cta_url: { value: "/contact-us", type: "text" },
+  show_cta_band: { value: true, type: "boolean" },
+  cta_heading: { value: "Working on education in Ghana? Let’s talk.", type: "text" },
+  cta_body: {
+    value: "Ministries, funders, researchers and school leaders – we’re open to partnership at every level of the system.",
+    type: "textarea",
+  },
+  cta_image: { value: "/images/cta-illustration.svg", type: "media" },
+  cta_email_label: { value: "Email the team", type: "text" },
+  cta_email: { value: "info@t-tel.org", type: "text" },
+  cta_contact_label: { value: "Find our office", type: "text" },
+  cta_contact_url: { value: "/contact-us", type: "text" },
 
   footer_links_heading: { value: "About Us", type: "text" },
   footer_menu_1: { value: "about-us", type: "menu" },
@@ -171,11 +182,17 @@ export const THEME_SETTINGS = {
   contact_map_embed: { value: "https://maps.google.com/maps?q=TTEL%20Office%2C%20Accra&t=m&z=16&output=embed&iwloc=near", type: "textarea" },
 
   social_facebook: { value: "https://facebook.com/ttelghana/", type: "text" },
+  social_facebook_icon: { value: "facebook", type: "select" },
   social_twitter: { value: "https://x.com/ttelghana", type: "text" },
+  social_twitter_icon: { value: "twitter", type: "select" },
   social_instagram: { value: "https://www.instagram.com/ttelghana", type: "text" },
+  social_instagram_icon: { value: "instagram", type: "select" },
   social_linkedin: { value: "https://gh.linkedin.com/company/transforming-teaching-education-learning", type: "text" },
+  social_linkedin_icon: { value: "linkedin", type: "select" },
   social_youtube: { value: "https://www.youtube.com/channel/UCp7FYySxt91osDE4ASx4Ocw", type: "text" },
+  social_youtube_icon: { value: "youtube", type: "select" },
   social_flickr: { value: "https://www.flickr.com/people/140304726@N07/", type: "text" },
+  social_flickr_icon: { value: "flickr", type: "select" },
 };
 
 export const AUTH_SETTINGS = {

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  Post, Page, Person, PersonGroup, Partner, ContentType, Tag,
+  Post, Page, Person, PersonGroup, Partner, PartnerGroup, ContentType, Tag,
   Menu, MenuItem, Form, FormSubmission, Event, EventCategory,
   Slider, Document, DocumentCategory, User,
 } from "../models/index.js";
@@ -128,6 +128,10 @@ resource("/person-groups", PersonGroup, {
 
 resource("/partners", Partner, {
   searchable: ["name"], slugFrom: "name", populate: ["logo"], defaultSort: "sortOrder name",
+});
+
+resource("/partner-groups", PartnerGroup, {
+  searchable: ["name", "slug"], slugFrom: "name", softDelete: true, defaultSort: "sortOrder name",
 });
 
 resource("/events", Event, {
