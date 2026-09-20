@@ -6,7 +6,7 @@ import { storage } from "../services/storage.js";
 import { escapeRegex } from "../utils/escapeRegex.js";
 import rateLimit from "express-rate-limit";
 import {
-  Post, Page, Person, PersonGroup, Partner, ContentType,
+  Post, Page, Person, PersonGroup, Partner, PartnerGroup, ContentType,
   Menu, MenuItem, Form, FormSubmission, Event, Slider,
   Document, DocumentCategory, Setting,
 } from "../models/index.js";
@@ -135,6 +135,16 @@ router.get("/partners", asyncHandler(async (req, res) => {
   if (req.query.home === "true") filter.showOnHome = true;
   const items = await Partner.find(filter).sort("sortOrder name").populate("logo", "url alt").lean();
   res.json({ items });
+}));
+
+router.get("/partner-groups", asyncHandler(async (req, res) => {
+  const groups = await PartnerGroup.find({ deletedAt: null }).sort("sortOrder name").lean();
+  const counts = await Partner.aggregate([
+    { $match: { deletedAt: null } },
+    { $group: { _id: "$group", count: { $sum: 1 } } },
+  ]);
+  const bySlug = new Map(counts.map((item) => [item._id, item.count]));
+  res.json({ items: groups.map((group) => ({ ...group, count: bySlug.get(group.slug) || 0 })) });
 }));
 
 /* ---------------- knowledge hub ---------------- */

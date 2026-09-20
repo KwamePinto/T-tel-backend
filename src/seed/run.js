@@ -14,7 +14,7 @@ import { env, ROOT } from "../config/env.js";
 import { connectDb, disconnectDb } from "../config/db.js";
 import {
   User, Setting, ContentType, Post, Page, Person, PersonGroup, Partner,
-  Menu, MenuItem, Form, Document, DocumentCategory, Media,
+  Menu, MenuItem, Form, Document, DocumentCategory, Media, PartnerGroup,
 } from "../models/index.js";
 import { toSlug, uniqueSlug } from "../utils/slug.js";
 import {
@@ -102,6 +102,12 @@ const SETTING_OPTIONS = {
   default_font_size: ["small", "medium", "large"],
   default_language: ["en"],
   registration_role: ["user", "author", "editor"],
+  social_facebook_icon: ["facebook", "twitter", "instagram", "linkedin", "youtube", "flickr"],
+  social_twitter_icon: ["facebook", "twitter", "instagram", "linkedin", "youtube", "flickr"],
+  social_instagram_icon: ["facebook", "twitter", "instagram", "linkedin", "youtube", "flickr"],
+  social_linkedin_icon: ["facebook", "twitter", "instagram", "linkedin", "youtube", "flickr"],
+  social_youtube_icon: ["facebook", "twitter", "instagram", "linkedin", "youtube", "flickr"],
+  social_flickr_icon: ["facebook", "twitter", "instagram", "linkedin", "youtube", "flickr"],
 };
 
 /** "home_who_button_label" -> "Who button label" (the prefix is the section). */
@@ -465,7 +471,7 @@ async function main() {
     console.log("[seed] --reset: clearing content collections");
     await Promise.all([
       Post.deleteMany({}), Page.deleteMany({}), Person.deleteMany({}),
-      PersonGroup.deleteMany({}), Partner.deleteMany({}), Menu.deleteMany({}),
+      PersonGroup.deleteMany({}), Partner.deleteMany({}), PartnerGroup.deleteMany({}), Menu.deleteMany({}),
       MenuItem.deleteMany({}), ContentType.deleteMany({}), Media.deleteMany({}),
       Document.deleteMany({}), DocumentCategory.deleteMany({}), Setting.deleteMany({}),
     ]);
