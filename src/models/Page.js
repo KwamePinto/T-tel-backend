@@ -2,10 +2,30 @@ import mongoose from "mongoose";
 
 export const TEMPLATES = ["default", "full-width", "landing", "inner", "contact"];
 
+/**
+ * Pages come in two kinds, and the difference is who can create one.
+ *
+ * A "custom" page is the ordinary sort: a hero and a block of rich text,
+ * rendered by the catch-all route on the site. Every page the admin creates is
+ * one of these, they all share a single editor, and no developer is involved.
+ *
+ * A "special" page is backed by its own coded component — Our History's
+ * timeline, Who We Are's vision and principles — so its content lives in
+ * `sections` as structured data rather than as prose, and it gets an editor
+ * built for exactly those fields. Adding one means a developer writes the
+ * component and a blueprint describing its fields (see the admin's
+ * pageBlueprints folder), which is why `kind` is not something the admin UI
+ * ever lets you change: a page cannot become special without code behind it.
+ */
+export const PAGE_KINDS = ["special", "custom"];
+
 const pageSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    // custom is the default because it is the only kind anything can create
+    // without a developer also shipping a component for it
+    kind: { type: String, enum: PAGE_KINDS, default: "custom", index: true },
     body: { type: String, default: "" },
     template: { type: String, enum: TEMPLATES, default: "default" },
     status: { type: String, enum: ["draft", "published", "scheduled"], default: "draft", index: true },
