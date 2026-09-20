@@ -19,6 +19,22 @@ export const TEMPLATES = ["default", "full-width", "landing", "inner", "contact"
  */
 export const PAGE_KINDS = ["special", "custom"];
 
+/**
+ * Which of the main menus a page belongs under.
+ *
+ * This is more than filing: it decides the shape of the page. A custom page
+ * under About Us is laid out as an account, with its heading held beside the
+ * text; one under Focus Areas gets a reading column with a panel pinned
+ * alongside; one under Programmes gets the banded treatment with its figures
+ * set apart. They share one editor — the fields are the same — and the menu
+ * decides how those fields are arranged, which is what lets an admin add a
+ * page anywhere in the site and have it come out looking like it belongs.
+ *
+ * Empty means a standalone page sitting at the top level, rendered as plain
+ * prose under its hero.
+ */
+export const PAGE_SECTIONS = ["", "about-us", "focus-areas", "programmes"];
+
 const pageSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
@@ -26,7 +42,18 @@ const pageSchema = new mongoose.Schema(
     // custom is the default because it is the only kind anything can create
     // without a developer also shipping a component for it
     kind: { type: String, enum: PAGE_KINDS, default: "custom", index: true },
+    section: { type: String, enum: PAGE_SECTIONS, default: "", index: true },
     body: { type: String, default: "" },
+
+    // the panel that stays beside the text on the Focus Areas layout, and the
+    // figures band on the Programmes one — same shape as a post's
+    keyInfo: {
+      label: { type: String, default: "" },
+      title: { type: String, default: "" },
+      html: { type: String, default: "" },
+      linkLabel: { type: String, default: "" },
+      linkUrl: { type: String, default: "" },
+    },
     template: { type: String, enum: TEMPLATES, default: "default" },
     status: { type: String, enum: ["draft", "published", "scheduled"], default: "draft", index: true },
     publishedAt: Date,
@@ -60,5 +87,23 @@ const pageSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+/**
+ * A custom page filed under a menu lives at that menu's address, so the URL
+ * matches where the page actually sits in the site.
+ *
+ * Only custom pages: a special page's slug is fixed by the route its component
+ * is mounted on. The two guards matter — a slug already under the section is
+ * left alone so re-saving cannot nest it twice, and a slug equal to the
+ * section is the menu's own landing page, which must not become
+ * "about-us/about-us".
+ */
+pageSchema.pre("save", function prefixSlugWithSection(next) {
+  const { section, slug, kind } = this;
+  if (kind === "custom" && section && slug && slug !== section && !slug.startsWith(`${section}/`)) {
+    this.slug = `${section}/${slug}`;
+  }
+  next();
+});
 
 export const Page = mongoose.model("Page", pageSchema);
