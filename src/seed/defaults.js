@@ -35,8 +35,9 @@ export const DOCUMENT_COLLECTION_TREE = [
   },
   { name: "Basic Education", slug: "basic-education", sortOrder: 2 },
   { name: "Secondary Education", slug: "secondary-education", sortOrder: 3 },
-  { name: "T-TEL Reports & Publications", slug: "reports-and-publications", sortOrder: 4 },
-  { name: "Policies", slug: "policies", sortOrder: 5 },
+  { name: "TVET", slug: "tvet", sortOrder: 4 },
+  { name: "T-TEL Reports & Publications", slug: "reports-and-publications", sortOrder: 5 },
+  { name: "Policies", slug: "policies", sortOrder: 6 },
 ];
 
 export const DOCUMENT_COLLECTIONS = [
@@ -208,6 +209,7 @@ export const CONTACT_FORM = {
   fields: [
     { type: "text", label: "Name", name: "name", required: true, placeholder: "Your name", width: "half" },
     { type: "email", label: "Email", name: "email", required: true, placeholder: "you@example.com", width: "half" },
+    { type: "tel", label: "Telephone", name: "phone", required: false, placeholder: "(+233) 055 435 7370", width: "half" },
     { type: "text", label: "Subject", name: "subject", required: false, placeholder: "What is this about?", width: "full" },
     { type: "textarea", label: "Message", name: "message", required: true, placeholder: "How can we help?", width: "full" },
   ],
