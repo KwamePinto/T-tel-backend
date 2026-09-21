@@ -7,6 +7,14 @@ const settingSchema = new mongoose.Schema(
   {
     key: { type: String, required: true, unique: true, trim: true },
     value: mongoose.Schema.Types.Mixed,
+    /**
+     * Per-language values, as { fr: "…" }.
+     *
+     * The home page is built almost entirely from settings, so without this a
+     * site in French would still greet its readers in English. Falls back to
+     * `value` per key, so a setting with no French simply stays English.
+     */
+    translations: { type: mongoose.Schema.Types.Mixed, default: {} },
     group: { type: String, default: "theme", index: true },
     // presentation metadata, so the dashboard renders settings without
     // duplicating a field schema on the client

@@ -46,6 +46,9 @@ const collectionSchema = new mongoose.Schema(
     // Knowledge Hub nests one level: Teacher Education holds B.Ed. Resources,
     // College Leadership & Management and the rest. Null means top level.
     parent: { type: mongoose.Schema.Types.ObjectId, ref: "DocumentCategory", default: null, index: true },
+    // per-language overrides, as { fr: { name } } — see utils/localise.js
+    translations: { type: mongoose.Schema.Types.Mixed, default: {} },
+
     sortOrder: { type: Number, default: 0 },
   },
   { timestamps: true },
