@@ -129,22 +129,42 @@ router.get("/person-groups", asyncHandler(async (req, res) => {
 }));
 
 /* ---------------- partners ---------------- */
+
+/**
+ * A partner's membership test. Partners carry a `groups` list; records written
+ * before that existed still carry the single `group`, so both are asked.
+ */
+const inGroup = (slug) => ({ $or: [{ groups: slug }, { group: slug }] });
+
+/**
+ * Whatever shape came out of the database, a partner leaves this API with a
+ * `groups` array to test membership against — so callers never have to know
+ * that the single-group form once existed.
+ */
+function withGroups(partner) {
+  const groups = partner.groups?.length ? partner.groups : (partner.group ? [partner.group] : []);
+  return { ...partner, groups, group: groups[0] || "" };
+}
+
 router.get("/partners", asyncHandler(async (req, res) => {
   const filter = { deletedAt: null };
-  if (req.query.group) filter.group = req.query.group;
+  // ?group=funder, or a comma-separated list, matches any of the partner's groups
+  const group = req.query.group || req.query.groups;
+  if (group) filter.$or = String(group).split(",").flatMap((slug) => inGroup(slug).$or);
   if (req.query.home === "true") filter.showOnHome = true;
-  const items = await Partner.find(filter).sort("sortOrder name").populate("logo", "url alt").lean();
-  res.json({ items });
+  // width/height come along so a caller can size a logo by its own shape
+  // rather than forcing every mark into one box
+  const items = await Partner.find(filter).sort("sortOrder name").populate("logo", "url alt width height").lean();
+  res.json({ items: items.map(withGroups) });
 }));
 
 router.get("/partner-groups", asyncHandler(async (req, res) => {
   const groups = await PartnerGroup.find({ deletedAt: null }).sort("sortOrder name").lean();
-  const counts = await Partner.aggregate([
-    { $match: { deletedAt: null } },
-    { $group: { _id: "$group", count: { $sum: 1 } } },
-  ]);
-  const bySlug = new Map(counts.map((item) => [item._id, item.count]));
-  res.json({ items: groups.map((group) => ({ ...group, count: bySlug.get(group.slug) || 0 })) });
+  // A partner in two groups is counted in both, which is the point of the list.
+  const withCounts = await Promise.all(groups.map(async (group) => ({
+    ...group, count: await Partner.countDocuments({ deletedAt: null, ...inGroup(group.slug) }),
+  })));
+  res.json({ items: withCounts });
 }));
 
 /* ---------------- knowledge hub ---------------- */

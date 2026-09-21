@@ -126,8 +126,11 @@ resource("/person-groups", PersonGroup, {
   searchable: ["name"], slugFrom: "name", softDelete: false, defaultSort: "sortOrder name",
 });
 
+// `groups` is the list the editor drives; `group` is the single field it
+// replaced, kept filterable for anything that hasn't moved over yet.
 resource("/partners", Partner, {
   searchable: ["name"], slugFrom: "name", populate: ["logo"], defaultSort: "sortOrder name",
+  allowedFilters: ["group", "groups"],
 });
 
 resource("/partner-groups", PartnerGroup, {
