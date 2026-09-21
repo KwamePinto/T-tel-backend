@@ -49,6 +49,27 @@ settingSchema.statics.asObject = async function asObject(group, lang) {
   );
 };
 
+/**
+ * Writes translations[lang] for each key, scoped to `group` so a key from a
+ * different settings screen sharing the same name is untouched. Merges into
+ * whatever French is already on the row rather than replacing it wholesale,
+ * so saving the Theme screen cannot clear a value entered on another one.
+ */
+settingSchema.statics.setTranslations = async function setTranslations(byLang, group = "theme") {
+  const ops = [];
+  for (const [lang, entries] of Object.entries(byLang || {})) {
+    for (const [key, value] of Object.entries(entries || {})) {
+      ops.push({
+        updateOne: {
+          filter: { key, group },
+          update: { $set: { [`translations.${lang}`]: value } },
+        },
+      });
+    }
+  }
+  if (ops.length) await this.bulkWrite(ops);
+};
+
 settingSchema.statics.setMany = async function setMany(entries, group = "theme") {
   const ops = Object.entries(entries).map(([key, value]) => ({
     updateOne: {
