@@ -17,6 +17,15 @@ const documentSchema = new mongoose.Schema(
     sourceHash: { type: String, default: null, index: true },
     status: { type: String, enum: ["draft", "published"], default: "published", index: true },
     sortOrder: { type: Number, default: 0 },
+
+    /**
+     * Per-language overrides, as { fr: { title, body, … } }.
+     *
+     * Only the fields that have been translated need to be present — the API
+     * falls back field by field, so a record can be translated a piece at a
+     * time and stay readable throughout. See utils/localise.js.
+     */
+    translations: { type: mongoose.Schema.Types.Mixed, default: {} },
     deletedAt: { type: Date, default: null, index: true },
   },
   { timestamps: true },
