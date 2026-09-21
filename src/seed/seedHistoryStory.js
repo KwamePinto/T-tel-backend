@@ -7,8 +7,8 @@
  *
  *   node scripts/seedHistoryStory.js
  */
-import { connectDb, disconnectDb } from "../src/config/db.js";
-import { Page } from "../src/models/Page.js";
+import { connectDb, disconnectDb } from "../config/db.js";
+import { Page } from "../models/Page.js";
 
 const STORY = {
   eyebrow: "Institutional Origins",

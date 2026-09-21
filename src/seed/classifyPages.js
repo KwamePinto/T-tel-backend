@@ -12,8 +12,8 @@
  *
  *   node scripts/classifyPages.js
  */
-import { connectDb, disconnectDb } from "../src/config/db.js";
-import { Page } from "../src/models/Page.js";
+import { connectDb, disconnectDb } from "../config/db.js";
+import { Page } from "../models/Page.js";
 
 /** The main menus a page can be filed under. */
 const MENUS = ["about-us", "focus-areas", "programmes"];

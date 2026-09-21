@@ -1,3 +1,12 @@
+/**
+ * Makes sure the "Working on education…" call-to-action band has a full set
+ * of Setting records (heading, body, email, social icons) so the admin
+ * screen has something to show even on a database seeded before this
+ * section existed.
+ *
+ * Safe to re-run: each key is only created if missing ($setOnInsert), so an
+ * edit already made in the admin is never overwritten.
+ */
 import { connectDb, disconnectDb } from "../config/db.js";
 import { Setting } from "../models/index.js";
 import { THEME_SETTINGS } from "./defaults.js";

@@ -12,9 +12,9 @@
  *
  *   node scripts/seedFocusKeyInfo.js
  */
-import { connectDb, disconnectDb } from "../src/config/db.js";
-import { Post } from "../src/models/Post.js";
-import { ContentType } from "../src/models/ContentType.js";
+import { connectDb, disconnectDb } from "../config/db.js";
+import { Post } from "../models/Post.js";
+import { ContentType } from "../models/ContentType.js";
 
 const KEY_INFO = {
   label: "Institutional Links",
