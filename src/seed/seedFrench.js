@@ -21,11 +21,11 @@
  *
  *   node scripts/seedFrench.js
  */
-import { connectDb, disconnectDb } from "../src/config/db.js";
-import { Page } from "../src/models/Page.js";
-import { Partner } from "../src/models/Partner.js";
-import { DocumentCategory } from "../src/models/Document.js";
-import { Setting } from "../src/models/Setting.js";
+import { connectDb, disconnectDb } from "../config/db.js";
+import { Page } from "../models/Page.js";
+import { Partner } from "../models/Partner.js";
+import { DocumentCategory } from "../models/Document.js";
+import { Setting } from "../models/Setting.js";
 
 /** Home page and shell wording. Keys not listed keep their English. */
 const SETTINGS = {

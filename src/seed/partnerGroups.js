@@ -1,3 +1,10 @@
+/**
+ * Creates the three Our Partners groups (Government, Universities, Funding &
+ * Project Partners) as PartnerGroup records, so partners can be filed under
+ * them from the admin instead of the group list being hardcoded.
+ *
+ * Safe to re-run: each group upserts by slug.
+ */
 import { connectDb, disconnectDb } from "../config/db.js";
 import { Page } from "../models/Page.js";
 import { PartnerGroup } from "../models/PartnerGroup.js";

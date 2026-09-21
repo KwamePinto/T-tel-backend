@@ -1,3 +1,10 @@
+/**
+ * Downloads each Our People member's photo from the live CMS and attaches
+ * it as a Media record, for records that were migrated with a name and bio
+ * but no picture.
+ *
+ * Safe to re-run: a person who already has a photo is left alone.
+ */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

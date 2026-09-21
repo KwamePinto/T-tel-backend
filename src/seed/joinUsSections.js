@@ -1,3 +1,10 @@
+/**
+ * Writes the Join Us page's structured sections (intro, roles, CTA), the
+ * same content the page used to render from a hardcoded frontend module.
+ *
+ * Re-running overwrites these sections with the copy below — check the
+ * admin for edits worth preserving before running this again.
+ */
 import { connectDb, disconnectDb } from "../config/db.js";
 import { Page } from "../models/Page.js";
 
