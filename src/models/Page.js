@@ -83,6 +83,15 @@ const pageSchema = new mongoose.Schema(
     ],
 
     isSystem: { type: Boolean, default: false },
+
+    /**
+     * Per-language overrides, as { fr: { title, body, … } }.
+     *
+     * Only the fields that have been translated need to be present — the API
+     * falls back field by field, so a record can be translated a piece at a
+     * time and stay readable throughout. See utils/localise.js.
+     */
+    translations: { type: mongoose.Schema.Types.Mixed, default: {} },
     deletedAt: { type: Date, default: null, index: true },
   },
   { timestamps: true },

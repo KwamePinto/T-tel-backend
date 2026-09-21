@@ -28,9 +28,17 @@ settingSchema.statics.schemaFor = async function schemaFor(group) {
   return this.find(group ? { group } : {}).sort("sortOrder key").lean();
 };
 
-settingSchema.statics.asObject = async function asObject(group) {
+settingSchema.statics.asObject = async function asObject(group, lang) {
   const rows = await this.find(group ? { group } : {}).lean();
-  return Object.fromEntries(rows.map((r) => [r.key, r.value]));
+  return Object.fromEntries(
+    rows.map((r) => {
+      const translated = lang && lang !== "en" ? r.translations?.[lang] : null;
+      const useTranslation =
+        translated !== null && translated !== undefined &&
+        !(typeof translated === "string" && !translated.trim());
+      return [r.key, useTranslation ? translated : r.value];
+    }),
+  );
 };
 
 settingSchema.statics.setMany = async function setMany(entries, group = "theme") {

@@ -12,8 +12,23 @@ import {
 } from "../models/index.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
+import { localise } from "../utils/localise.js";
 
 const router = Router();
+
+/**
+ * Answers in the requested language.
+ *
+ * Wrapping res.json once here means every public route — including any added
+ * later — serves translations without knowing they exist, and a route that
+ * has nothing translated is unaffected.
+ */
+router.use((req, res, next) => {
+  const lang = String(req.query.lang || "").trim().toLowerCase() || "en";
+  const sendJson = res.json.bind(res);
+  res.json = (body) => sendJson(localise(body, lang));
+  next();
+});
 
 const published = { deletedAt: null, status: "published" };
 const live = () => ({ ...published, $or: [{ publishedAt: { $lte: new Date() } }, { publishedAt: null }] });
@@ -22,8 +37,12 @@ const live = () => ({ ...published, $or: [{ publishedAt: { $lte: new Date() } },
    One request that returns everything the shell needs: settings, menus and
    navigation. Saves the front end from a waterfall of calls on first paint. */
 router.get("/bootstrap", asyncHandler(async (req, res) => {
+  // the shell's own wording is a setting, so it is asked for in the reader's
+  // language here rather than being left to the localise middleware, which
+  // works on records rather than on a flat key/value map
+  const lang = String(req.query.lang || "").trim().toLowerCase() || "en";
   const [settings, menus] = await Promise.all([
-    Setting.asObject("theme"),
+    Setting.asObject("theme", lang),
     Menu.find().lean(),
   ]);
 
