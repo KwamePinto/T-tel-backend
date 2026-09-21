@@ -3,10 +3,10 @@
  *
  *   node src/seed/historyPhases.js [--dry]
  *
- * Five phases, the reference site's own wording, laid out as the snaking
- * bracket it uses: each entry spans the full width with a rule down one side
- * and along the bottom, alternating, and a numbered badge centred on the
- * ruled edge.
+ * Five phases in the reference site's own wording, plus the account that runs
+ * beside them. The page reads as one column of numbered entries with a pinned
+ * heading and a single photograph — Phase 1's — held in the rail alongside, so
+ * only phase 1 carries an image here. Phases 2–5 are text only.
  *
  * Two departures from the source, both deliberate:
  *
@@ -36,10 +36,10 @@ const PHASES = [
   },
   {
     step: 2,
-    // The reference site repeats Phase 1's photograph here; showing the same
-    // picture twice in one column says nothing the second time.
+    // One photograph for the whole sequence: Phase 1's picture is lifted out
+    // to the rail beside the phases, so repeating it here would show the same
+    // image twice on one screen. Phases 2–5 are text only.
     title: "The idea is born",
-    image: PHASE_IMAGE,
     paras: [
       "The idea to set up T-TEL as an independent organisation was first conceived on 30 July 2019 during a meeting held on the margins of the Association for the Development of Education in Africa High-Level Policy Dialogue Forum on Secondary Education in Johannesburg, South Africa. The meeting brought together representatives from the Mastercard Foundation and a high-level Ghanaian delegation led by the then Minister for Education. Accompanying the Minister were the Director-General of the Ghana Education Service, the Administrator of GETFund and a Key Advisor from the T-TEL Project1 who had played a central role in facilitating the delegation's participation.",
     ],
@@ -47,7 +47,6 @@ const PHASES = [
   {
     step: 3,
     title: "Momentum protected",
-    image: PHASE_IMAGE,
     paras: [
       "Recognising the imminent closure of the T-TEL Project in December 2020, the Minister and his team saw the urgent need to sustain the momentum and technical support that the Project had provided. They agreed that the legacy of the T-TEL Project should continue through the creation of a new, independent and Ghanaian-led organisation.",
     ],
@@ -55,7 +54,6 @@ const PHASES = [
   {
     step: 4,
     title: "Foundations laid",
-    image: PHASE_IMAGE,
     paras: [
       "Upon returning to Ghana, a small team of committed individuals was mobilized who became known as the promoters. These individuals gave their time, expertise and energy to ensure that proper foundations were laid for the new organisation. Their efforts led to the identification of a distinguished legal expert, the recruitment of founding subscribers and board members and ultimately, the registration of Transforming Teaching, Education and Learning (T-TEL) as a Ghanaian non-governmental organisation on 7th July 2020.",
     ],
@@ -63,7 +61,6 @@ const PHASES = [
   {
     step: 5,
     title: "Built on partnership",
-    image: PHASE_IMAGE,
     paras: [
       "From its inception T-TEL was built on the principle of partnership with government and education institutions. It was created to serve as a trusted technical partner, supporting national leadership to own reforms and drive innovations to move Ghana's education system to greater heights.",
     ],
@@ -76,6 +73,25 @@ const LINKS = [
     url: "/about-us/who-we-are",
   },
   { label: "Download T-TEL Project Report", url: "/knowledge-hub/reports-and-publications" },
+];
+
+/**
+ * The account that runs beside the pinned heading.
+ *
+ * This is the page's earlier long-form copy, carried over verbatim when the
+ * roadmap was re-cut: the opening three paragraphs came from the intro that
+ * used to sit above the timeline, the closing four from the text that followed
+ * its quote. It lives in `story.paras` so the opening account reads as a full
+ * piece again rather than an empty column under its heading.
+ */
+const ACCOUNT = [
+  "Transforming Teaching, Education & Learning (T-TEL) was established as an independent Ghanaian not-for-profit organisation on 7th July 2020.",
+  "T-TEL was established after the successful completion of Transforming Teacher Education and Learning, a six-year $34 million Government of Ghana pre-service teacher training programme funded by the Foreign, Commonwealth & Development Office (FCDO) and implemented by Cambridge Education from 2014 to 2020.",
+  "Transforming Teacher Education & Learning was a national teacher education reform programme owned by the Ministry of Education and led by the Ghana Tertiary Education Commission (GTEC). Its work centred on the introduction of a Bachelor in Education (B.Ed.) degree in Initial Teacher Education in all 46 public Colleges of Education (CoEs) affiliated to 5 public universities. It was seen by key stakeholders including FCDO and the Ministry of Education as a very successful programme which brought about significant changes in Ghana's teacher education system.",
+  "The Independent Commission on Aid Impact (ICAI)'s country report on UK aid to Ghana, published in February 2020, found that T-TEL's work on teacher training was the UK Government funded intervention in Ghana judged 'most likely to be sustained' due to its strong performance on institutional strengthening and \"strong signals that practice in Colleges of Education has changed.\"",
+  "With this credible platform established the programme team, with the guidance of the then Minister of Education, Dr. Mathew Opoku Prempeh, and key educationists, explored options to keep this work going after the FCDO programme ended. Through discussions with the Ministry of Education and international donor agencies the organisation's founders identified the need for a competent, highly skilled Ghanaian Technical Assistance provider to assist the education system to articulate and achieve its policy goals. It was agreed that T-TEL was positioned to fill this gap within the Ghanaian education sector.",
+  "The Mastercard Foundation agreed to explore the potential for future partnership and with this encouragement a group of 15 subscribers came together to develop T-TEL's constitution, vision, mission and guiding principles. These subscribers all have a strong commitment to improving the quality and relevance of learning outcomes across Ghana's education system. Their commitment and dedication ensured that T-TEL was formally registered in July 2020.",
+  "Currently most large-scale TA programmes in Ghana involve international organisations who, whilst most of their employees may be Ghanaian, have leadership structures and processes based outside of the country. The aspiration to provide genuinely Ghanaian competition for these international organisations, using contextual expertise, understanding and rootedness to provide high quality services which deliver results and represent value for money is the driving force behind T-TEL.",
 ];
 
 await connectDb();
@@ -93,6 +109,7 @@ const data = {
     eyebrow: "Our Origins",
     heading: "From an externally funded programme to a Ghanaian-owned institution",
     lead: "The idea is conceived on the margins of an ADEA policy forum in Johannesburg.",
+    paras: ACCOUNT,
     stats: [
       { value: "2019", label: "The idea is conceived on the margins of an ADEA policy forum in Johannesburg." },
       { value: "7 July 2020", label: "Registered as a Ghanaian non-governmental organisation." },
