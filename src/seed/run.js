@@ -429,7 +429,7 @@ async function seedPartners() {
         { slug },
         {
           $set: {
-            name: p.name, group, logo, description: p.description || "",
+            name: p.name, groups: [group], group, logo, description: p.description || "",
             sortOrder: i, showOnHome: group === "funder",
             isPrincipal: p.name === "Mastercard Foundation",
           },

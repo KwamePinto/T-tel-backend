@@ -87,7 +87,7 @@ for (const section of data.sections) {
 
     const isNew = !partner;
     if (isNew) {
-      partner = new Partner({ name: item.name, slug, group });
+      partner = new Partner({ name: item.name, slug, groups: [group], group });
       stats.created++;
     }
 
@@ -110,7 +110,9 @@ for (const section of data.sections) {
       `${logo ? "image ok" : DRY ? "image: fetched on real run" : "no image"}`);
 
     if (!DRY) {
-      partner.group = group;
+      // This script restores the reference page's own layout, so a partner is
+      // put back in exactly the one section the reference site files it under.
+      partner.groups = [group];
       partner.description = item.body;
       partner.isPrincipal = false;
       partner.sortOrder = order;
