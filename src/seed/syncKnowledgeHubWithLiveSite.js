@@ -75,22 +75,59 @@ const TYPES = [
 ];
 
 /**
- * The file behind a WPDM id. A text/html body means the download is withdrawn
- * on their side — there is nothing to fetch, and that is reported rather than
- * treated as a failure to retry.
+ * The file behind a WPDM id, downloaded resumably.
+ *
+ * Some of these handbooks are 150MB and this link resets connections part-way
+ * through them; retrying the whole file from zero never got past the same
+ * point twice. t-tel.org honours the *start* of a byte range even though it
+ * ignores the end (asking for bytes 1000-1099 returns everything from 1000
+ * onwards), so a dropped transfer can be picked up where it stopped and the
+ * bytes kept. Each attempt only has to outlive the next few megabytes.
+ *
+ * A text/html body means the download is withdrawn on their side — there is
+ * nothing to fetch, and that is reported rather than retried.
  */
 async function download(wpdmdl) {
-  const res = await fetch(`https://t-tel.org/?wpdmdl=${wpdmdl}`, { redirect: "follow" });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const buf = Buffer.from(await res.arrayBuffer());
-  const head = buf.subarray(0, 4);
+  const url = `https://t-tel.org/?wpdmdl=${wpdmdl}`;
+  let buf = Buffer.alloc(0);
+  let stalled = 0;
+  let lastErr = null;
+  let declaredName = ""; // the server names the file, which is how a .docx is told from a .zip
 
+  for (let attempt = 1; attempt <= 40; attempt++) {
+    const before = buf.length;
+    try {
+      const headers = before ? { range: `bytes=${before}-` } : {};
+      const res = await fetch(url, { redirect: "follow", headers, signal: AbortSignal.timeout(120000) });
+      if (!res.ok && res.status !== 206) throw new Error(`HTTP ${res.status}`);
+      if (!declaredName) declaredName = (res.headers.get("content-disposition") || "").match(/filename="?([^"]+)"?/)?.[1] || "";
+
+      for await (const chunk of res.body) {
+        buf = buf.length ? Buffer.concat([buf, chunk]) : Buffer.from(chunk);
+      }
+      lastErr = null;
+      break; // body ended cleanly — the file is whole
+    } catch (err) {
+      lastErr = err;
+      if (err.withdrawn) throw err;
+      const gained = buf.length - before;
+      if (gained === 0) stalled += 1; else stalled = 0;
+      if (stalled >= 6) break;
+      if (attempt < 40) {
+        const wait = Math.min(8000, 500 * attempt);
+        if (buf.length) console.log(`     … cut at ${(buf.length / 1048576).toFixed(1)}MB, resuming (attempt ${attempt + 1})`);
+        await new Promise((r) => setTimeout(r, wait));
+      }
+    }
+  }
+
+  if (!buf.length) throw lastErr || new Error("no bytes received");
+
+  const head = buf.subarray(0, 4);
   for (const [magic, mime, ext] of TYPES) {
     if (head.equals(magic)) {
-      const cd = res.headers.get("content-disposition") || "";
-      const named = (cd.match(/filename="?([^"]+)"?/) || [])[1] || "";
-      const realExt = path.extname(named).toLowerCase();
-      if (realExt && realExt !== ext) return { buf, mime: res.headers.get("content-type") || mime, ext: realExt };
+      const realExt = path.extname(declaredName).toLowerCase();
+      if (realExt && realExt !== ext) return { buf, mime, ext: realExt };
       return { buf, mime, ext };
     }
   }
