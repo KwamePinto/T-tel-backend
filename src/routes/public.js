@@ -191,10 +191,14 @@ router.get("/documents", asyncHandler(async (req, res) => {
   const { collection, tag, search, year, page = 1, limit = 24, sort = "date", order = "desc" } = req.query;
   const filter = { deletedAt: null, status: "published" };
 
-  // mirrors the controls the old Knowledge Hub offered
+  // mirrors the controls the old Knowledge Hub offered, plus "collection":
+  // the order the documents are actually arranged in, which is how t-tel.org
+  // lists them and so what a visitor should meet before choosing a sort.
   const SORTS = { date: "createdAt", title: "title", updated: "updatedAt", downloads: "downloads" };
   const dir = order === "asc" ? "" : "-";
-  const sortBy = `${dir}${SORTS[sort] || SORTS.date}`;
+  const sortBy = sort === "collection"
+    ? "sortOrder createdAt"
+    : `${dir}${SORTS[sort] || SORTS.date}`;
 
   if (collection) {
     const c = await DocumentCategory.findOne({ slug: collection }).lean();
