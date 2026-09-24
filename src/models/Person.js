@@ -12,7 +12,7 @@ const personSchema = new mongoose.Schema(
     bio: { type: String, default: "" },
     email: { type: String, default: "" },
     linkedin: { type: String, default: "" },
-    tag: { type: String, default: "" }, // e.g. "Leadership" / "Official" ribbon
+    tag: { type: String, default: "" }, // no longer shown on the site — see git history
     status: { type: String, enum: ["draft", "published"], default: "published", index: true },
     sortOrder: { type: Number, default: 0 },
 
@@ -37,7 +37,12 @@ const personGroupSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    // the short one-liner shown next to the heading on every category page
     description: { type: String, default: "" },
+    // a longer account, shown as a drop-capped paragraph above the photo grid
+    // on categories that have one (currently Subscribers and Board of
+    // Directors) — left blank, a category simply shows no intro paragraph
+    intro: { type: String, default: "" },
     sortOrder: { type: Number, default: 0 },
   },
   { timestamps: true },
