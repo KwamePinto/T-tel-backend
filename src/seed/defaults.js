@@ -41,13 +41,16 @@ export const DOCUMENT_COLLECTION_TREE = [
   { name: "Policies", slug: "policies", sortOrder: 6 },
 ];
 
+/* The live site's Knowledge Hub order. There is no TVET collection: its
+   documents are B.Ed. course materials and live under B.Ed. Resources —
+   see alignKnowledgeHubToLiveSite.js. Policies isn't in that menu at all
+   (it backs About Us > Our Policies) and sorts last. */
 export const DOCUMENT_COLLECTIONS = [
-  { name: "Basic Education", slug: "basic-education", sortOrder: 1 },
-  { name: "Secondary Education", slug: "secondary-education", sortOrder: 2 },
-  { name: "TVET", slug: "tvet", sortOrder: 3 },
-  { name: "Teacher Education", slug: "teacher-education", sortOrder: 4 },
-  { name: "T-TEL Reports & Publications", slug: "reports-and-publications", sortOrder: 5 },
-  { name: "Policies", slug: "policies", sortOrder: 6 },
+  { name: "Teacher Education", slug: "teacher-education", sortOrder: 1 },
+  { name: "Basic Education", slug: "basic-education", sortOrder: 2 },
+  { name: "Secondary Education", slug: "secondary-education", sortOrder: 3 },
+  { name: "T-TEL Reports & Publications", slug: "reports-and-publications", sortOrder: 4 },
+  { name: "Policies", slug: "policies", sortOrder: 5 },
 ];
 
 export const MENUS = [
