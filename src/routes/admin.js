@@ -170,8 +170,29 @@ router.delete("/media-folders/:id", requireRole("editor"), media.deleteFolder);
 resource("/menus", Menu, { searchable: ["name"], slugFrom: "name", softDelete: false, defaultSort: "name" }, requireRole("editor"));
 
 router.get("/menus/:id/items", asyncHandler(async (req, res) => {
+  // sortOrder is only meaningful within one parent's own children (each
+  // parent's children are numbered 0, 1, 2… independently), so a flat sort
+  // by that field alone interleaves unrelated branches wherever their
+  // numbers happen to tie — e.g. every parent's first child sorts together.
+  // Group depth-first by `parent` instead, the same way the public site's
+  // nav tree is built, so the flat list the admin UI renders is actually in
+  // parent-then-children order.
   const items = await MenuItem.find({ menu: req.params.id }).sort("sortOrder").lean();
-  res.json({ items });
+  const byParent = new Map();
+  for (const item of items) {
+    const key = item.parent ? String(item.parent) : "";
+    if (!byParent.has(key)) byParent.set(key, []);
+    byParent.get(key).push(item);
+  }
+  const ordered = [];
+  const walk = (parentKey) => {
+    for (const item of byParent.get(parentKey) || []) {
+      ordered.push(item);
+      walk(String(item._id));
+    }
+  };
+  walk("");
+  res.json({ items: ordered });
 }));
 
 // Replaces a menu's items wholesale — simplest correct way to persist a
