@@ -15,6 +15,9 @@ import { upload } from "../middleware/upload.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { toSlug } from "../utils/slug.js";
+import {
+  syncPostNavPlacement, syncPageNavPlacement, cascadeMenuItem, cascadeDestroyMenuItem,
+} from "../services/navPlacement.js";
 
 const router = Router();
 
@@ -75,6 +78,12 @@ resource("/posts", Post, {
   allowedFilters: ["status", "contentType", "tag"],
   filterMap: { tag: "tags" },
   transform: resolveTagNames,
+  hooks: {
+    afterSave: syncPostNavPlacement,
+    afterTrash: (doc) => cascadeMenuItem("post", doc, { deletedAt: new Date() }),
+    afterRestore: (doc) => cascadeMenuItem("post", doc, { deletedAt: null }),
+    afterDestroy: (doc) => cascadeDestroyMenuItem("post", doc),
+  },
 });
 
 /**
@@ -104,6 +113,12 @@ resource("/pages", Page, {
   defaultSort: "sortOrder -createdAt",
   allowedFilters: ["status", "kind", "section"],
   transform: guardPageKind,
+  hooks: {
+    afterSave: syncPageNavPlacement,
+    afterTrash: (doc) => cascadeMenuItem("page", doc, { deletedAt: new Date() }),
+    afterRestore: (doc) => cascadeMenuItem("page", doc, { deletedAt: null }),
+    afterDestroy: (doc) => cascadeDestroyMenuItem("page", doc),
+  },
 });
 
 resource("/content-types", ContentType, {
@@ -177,7 +192,10 @@ router.get("/menus/:id/items", asyncHandler(async (req, res) => {
   // Group depth-first by `parent` instead, the same way the public site's
   // nav tree is built, so the flat list the admin UI renders is actually in
   // parent-then-children order.
-  const items = await MenuItem.find({ menu: req.params.id }).sort("sortOrder").lean();
+  // deletedAt is set when the Post/Page this item is linked to gets trashed
+  // (see cascadeMenuItem) — excluded here so it disappears from this screen
+  // exactly when it disappears from the public nav, and reappears on restore.
+  const items = await MenuItem.find({ menu: req.params.id, deletedAt: null }).sort("sortOrder").lean();
   const byParent = new Map();
   for (const item of items) {
     const key = item.parent ? String(item.parent) : "";
@@ -201,7 +219,12 @@ router.put("/menus/:id/items", requireRole("editor"), asyncHandler(async (req, r
   const { items = [] } = req.body;
   if (!Array.isArray(items)) throw ApiError.badRequest("items[] is required");
 
-  await MenuItem.deleteMany({ menu: req.params.id });
+  // Only the active items the client actually loaded and could send back —
+  // a cascade-hidden item (deletedAt set, its Post/Page currently trashed)
+  // was never in that list, so wiping every item for this menu unconditionally
+  // would permanently destroy it the next time someone saves an unrelated
+  // reorder, well before its own restore ever gets a chance to bring it back.
+  await MenuItem.deleteMany({ menu: req.params.id, deletedAt: null });
 
   const idMap = new Map();
   const created = [];

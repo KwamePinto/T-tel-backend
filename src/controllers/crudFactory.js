@@ -16,6 +16,11 @@ import { uniqueSlug } from "../utils/slug.js";
  * @param {boolean}  opts.softDelete      use deletedAt instead of removing
  * @param {string}   opts.defaultSort
  * @param {(req) => object} opts.baseFilter  extra filter applied to every query
+ * @param {object}   opts.hooks           side effects on another collection:
+ *   afterSave(doc, req)     — after create AND update, once `doc` is final
+ *   afterTrash(doc)         — after a soft-delete
+ *   afterRestore(doc)       — after `deletedAt` is cleared
+ *   afterDestroy(doc)       — after the document is actually removed
  */
 export function crudFactory(Model, opts = {}) {
   const {
@@ -28,6 +33,7 @@ export function crudFactory(Model, opts = {}) {
     allowedFilters = ["status", "contentType", "group", "collection", "category", "menu", "folder"],
     filterMap = {},
     transform = null,
+    hooks = {},
   } = opts;
 
   const applyPopulate = (q) => populate.reduce((acc, p) => acc.populate(p), q);
@@ -89,6 +95,7 @@ export function crudFactory(Model, opts = {}) {
     if (Model.schema.path("author") && req.user) payload.author ??= req.user._id;
 
     const doc = await Model.create(payload);
+    await hooks.afterSave?.(doc, req);
     res.status(201).json(doc);
   });
 
@@ -108,6 +115,7 @@ export function crudFactory(Model, opts = {}) {
 
     Object.assign(doc, payload);
     await doc.save();
+    await hooks.afterSave?.(doc, req);
     res.json(doc);
   });
 
@@ -119,9 +127,11 @@ export function crudFactory(Model, opts = {}) {
     if (softDelete) {
       doc.deletedAt = new Date();
       await doc.save();
+      await hooks.afterTrash?.(doc);
       return res.json({ ok: true, trashed: true, id: doc._id });
     }
     await doc.deleteOne();
+    await hooks.afterDestroy?.(doc);
     res.json({ ok: true, deleted: true, id: doc._id });
   });
 
@@ -130,6 +140,7 @@ export function crudFactory(Model, opts = {}) {
     if (!doc) throw ApiError.notFound(`${Model.modelName} not found`);
     doc.deletedAt = null;
     await doc.save();
+    await hooks.afterRestore?.(doc);
     res.json({ ok: true, restored: true, id: doc._id });
   });
 
@@ -138,6 +149,7 @@ export function crudFactory(Model, opts = {}) {
     if (!doc) throw ApiError.notFound(`${Model.modelName} not found`);
     if (doc.isSystem) throw ApiError.forbidden("This item is part of the site structure and cannot be deleted");
     await doc.deleteOne();
+    await hooks.afterDestroy?.(doc);
     res.json({ ok: true, deleted: true, id: doc._id });
   });
 

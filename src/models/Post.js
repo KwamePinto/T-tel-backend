@@ -69,6 +69,21 @@ const postSchema = new mongoose.Schema(
     sortOrder: { type: Number, default: 0 },
 
     /**
+     * Where this post sits in the site's navigation, chosen directly from its
+     * own editor instead of being a separate step in Menus. `parentUrl` is a
+     * top-level menu item's own URL (e.g. "/programmes") rather than its
+     * database id — a menu save recreates every MenuItem with a fresh id, so
+     * a stored id would silently go stale the next time anyone touched
+     * Menus; the URL is the stable, human-meaningful key. Empty means the
+     * post has no nav entry at all. See syncPostNavPlacement in
+     * routes/admin.js, which keeps the actual MenuItem in sync with this.
+     */
+    navPlacement: {
+      parentUrl: { type: String, default: "" },
+      label: { type: String, default: "" },
+    },
+
+    /**
      * Per-language overrides, as { fr: { title, body, … } }.
      *
      * Only the fields that have been translated need to be present — the API

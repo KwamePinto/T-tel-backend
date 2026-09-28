@@ -25,6 +25,10 @@ const menuItemSchema = new mongoose.Schema(
     linkRef: { type: mongoose.Schema.Types.ObjectId, default: null },
     target: { type: String, enum: ["_self", "_blank"], default: "_self" },
     sortOrder: { type: Number, default: 0 },
+    // Set only for an item created automatically from a Post/Page's own nav
+    // placement field — trashing or restoring that record cascades here by
+    // toggling this, instead of destroying and recreating the item.
+    deletedAt: { type: Date, default: null, index: true },
   },
   { timestamps: true },
 );
